@@ -1,0 +1,37 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: build2-bc
+spec:
+  runPolicy: Serial
+  triggers:
+  - generic:
+      secretReference:
+        name: demo-git-generic-webhook-secret
+
+  - github:
+      secretReference:
+        name: demo-git-github-webhook-secret
+
+  source:
+    git:
+      uri: https://github.com/jonggyoukim/developer-forum-demo.git
+
+
+  strategy:
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: nodejs:14-ubi7
+        namespace: openshift
+
+  output:
+    to:
+      kind: DockerImage
+      name: "shiftyou/build2-app:last"
+    pushSecret:
+      name: dockerhub
+
+  postCommit:
+      script: "ls"
+

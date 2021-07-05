@@ -1,0 +1,42 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: build1-bc
+spec:
+  runPolicy: Serial
+  triggers:
+  - generic:
+      secretReference:
+        name: demo-git-generic-webhook-secret
+    type: Generic
+
+  - github:
+      secretReference:
+        name: demo-git-github-webhook-secret
+    type: GitHub
+
+
+  source:
+    type: Git
+    git:
+      uri: https://github.com/jonggyoukim/developer-forum-demo.git
+
+
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: nodejs:14-ubi7
+        namespace: openshift
+
+
+  output:
+    to:
+      kind: ImageStreamTag
+      name: build1-app:latest
+
+
+  postCommit:
+      script: "ls"
+
